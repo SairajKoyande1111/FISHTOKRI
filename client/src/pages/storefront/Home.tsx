@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { Header } from "@/components/storefront/Header";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { CartDrawer } from "@/components/storefront/CartDrawer";
 import { useProducts } from "@/hooks/use-products";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { useLocation } from "wouter";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import fishImg from "@assets/Gemini_Generated_Image_w6wqkkw6wqkkw6wq_(1)_1772713077919.png";
 import prawnsImg from "@assets/Gemini_Generated_Image_5xy0sd5xy0sd5xy0_1772713090650.png";
@@ -12,6 +15,8 @@ import chickenImg from "@assets/Gemini_Generated_Image_g0ecb4g0ecb4g0ec_17727132
 import muttonImg from "@assets/Gemini_Generated_Image_8fq0338fq0338fq0_1772713565349.png";
 import masalaImg from "@assets/Gemini_Generated_Image_4e60a64e60a64e60_1772713888468.png";
 import allImg from "@assets/Gemini_Generated_Image_s0odfms0odfms0od_1772714896015.png";
+import banner1 from "@assets/Gemini_Generated_Image_1kjxqr1kjxqr1kjx_1772718118287.png";
+import banner2 from "@assets/Gemini_Generated_Image_npjzn2npjzn2npjz_1772718125998.png";
 
 const CATEGORIES = [
   { name: "All", image: allImg },
@@ -22,9 +27,27 @@ const CATEGORIES = [
   { name: "Masalas", image: masalaImg },
 ];
 
+const BANNERS = [banner1, banner2];
+
 export default function Home() {
   const { data: products, isLoading } = useProducts();
   const [activeCategory, setActiveCategory] = useState("All");
+  const [currentBanner, setCurrentBanner] = useState(0);
+  const [, setLocation] = useLocation();
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentBanner((prev) => (prev + 1) % BANNERS.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleCategoryClick = (catName: string) => {
+    setActiveCategory(catName);
+    // Open category in new view/filter (as requested "new page" feel but keeping SPA for now or we could navigate)
+    // For now, we'll just scroll to top of products as a "new view"
+    window.scrollTo({ top: 800, behavior: 'smooth' });
+  };
 
   const filteredProducts = products?.filter((p) => {
     if (p.isArchived) return false;
@@ -32,88 +55,110 @@ export default function Home() {
     return p.category === activeCategory;
   }) || [];
 
-  const todayStr = format(new Date(), "EEEE, MMMM do");
+  const getSectionProducts = (category: string) => {
+    return products?.filter(p => !p.isArchived && (category === "Today's Special" ? true : p.category === category)).slice(0, 6) || [];
+  };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col font-sans">
       <Header />
       
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Hero Section */}
-        <div className="relative overflow-hidden rounded-3xl bg-primary text-primary-foreground p-8 sm:p-12 mb-12 shadow-2xl shadow-primary/20">
-          <div className="relative z-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/20 text-sm font-medium mb-6">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
-              </span>
-              Fresh on {todayStr}
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        {/* Banner Carousel */}
+        <div className="relative w-full aspect-[21/9] rounded-2xl overflow-hidden mb-8 shadow-lg group">
+          {BANNERS.map((banner, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ${index === currentBanner ? 'opacity-100' : 'opacity-0'}`}
+            >
+              <img src={banner} alt={`Banner ${index + 1}`} className="w-full h-full object-cover" />
             </div>
-            <h1 className="text-4xl md:text-6xl font-display font-bold mb-4 leading-tight">
-              Fresh Catch,<br/>Delivered.
-            </h1>
-            <p className="text-primary-foreground/90 text-lg sm:text-xl max-w-md font-medium">
-              Premium quality seafood and meats delivered straight to your door.
-            </p>
-          </div>
-          {/* Decorative shapes */}
-          <div className="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 right-20 -mb-20 w-64 h-64 bg-gradient-to-tr from-accent/30 to-transparent rounded-full blur-3xl"></div>
+          ))}
+          <button 
+            onClick={() => setCurrentBanner((prev) => (prev - 1 + BANNERS.length) % BANNERS.length)}
+            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-md p-2 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <button 
+            onClick={() => setCurrentBanner((prev) => (prev + 1) % BANNERS.length)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-md p-2 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
         </div>
 
-        {/* Category Cards - 2x2 on mobile, responsive grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-12">
+        {/* Category Grid - Colorful cards with text below */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 mb-12">
           {CATEGORIES.map((cat) => (
-            <button
-              key={cat.name}
-              onClick={() => setActiveCategory(cat.name)}
-              className={`group relative aspect-square rounded-2xl overflow-hidden border-2 transition-all duration-300 ${
-                activeCategory === cat.name
-                  ? "border-accent ring-4 ring-accent/20 scale-[1.02] shadow-xl"
-                  : "border-transparent grayscale hover:grayscale-0 hover:border-accent/30"
-              }`}
-            >
-              <img 
-                src={cat.image} 
-                alt={cat.name} 
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end justify-center pb-4">
-                <span className="text-white font-display font-bold text-lg sm:text-xl drop-shadow-md">
-                  {cat.name}
-                </span>
-              </div>
-            </button>
+            <div key={cat.name} className="flex flex-col items-center group">
+              <button
+                onClick={() => handleCategoryClick(cat.name)}
+                className={`relative aspect-square w-full rounded-2xl overflow-hidden border-2 transition-all duration-300 ${
+                  activeCategory === cat.name
+                    ? "border-accent ring-4 ring-accent/20 scale-[1.05] shadow-xl"
+                    : "border-transparent hover:border-accent/30"
+                }`}
+              >
+                <img 
+                  src={cat.image} 
+                  alt={cat.name} 
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                />
+              </button>
+              <span className={`mt-3 font-semibold text-lg ${activeCategory === cat.name ? "text-accent" : "text-foreground"}`}>
+                {cat.name}
+              </span>
+            </div>
           ))}
         </div>
 
-        {/* Product Grid */}
-        {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="bg-card rounded-3xl p-4 border flex flex-col">
-                <Skeleton className="w-full aspect-square rounded-2xl mb-4" />
-                <Skeleton className="h-6 w-24 mb-2" />
-                <Skeleton className="h-8 w-full mb-4" />
-                <div className="flex justify-between mt-auto">
-                  <Skeleton className="h-8 w-20" />
-                  <Skeleton className="h-8 w-20 rounded-full" />
+        {/* Today's Special Section */}
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-foreground uppercase tracking-wide">FishTokri Today's Special</h2>
+          </div>
+          <div className="flex overflow-x-auto pb-4 gap-6 scrollbar-hide snap-x">
+            {isLoading ? [1,2,3,4,5,6].map(i => <Skeleton key={i} className="min-w-[280px] h-[380px] rounded-3xl" />) :
+              getSectionProducts("Today's Special").map(product => (
+                <div key={product.id} className="min-w-[280px] snap-start">
+                  <ProductCard product={product} />
                 </div>
-              </div>
-            ))}
+              ))
+            }
           </div>
-        ) : filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-in fade-in duration-500">
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        ) : (
-          <div className="py-20 text-center flex flex-col items-center">
-            <div className="text-6xl mb-4 opacity-50 filter grayscale">🎣</div>
-            <h3 className="text-2xl font-display font-semibold text-foreground mb-2">No items found</h3>
-            <p className="text-muted-foreground">Check back later for fresh stock in this category.</p>
-          </div>
+        </section>
+
+        {/* Category Specials */}
+        {["Fish", "Prawns", "Chicken", "Mutton"].map((category) => (
+          <section key={category} className="mb-12">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-foreground uppercase tracking-wide">{category} Specials</h2>
+              <Button variant="link" className="text-accent font-bold">View More</Button>
+            </div>
+            <div className="flex overflow-x-auto pb-4 gap-6 scrollbar-hide snap-x">
+              {isLoading ? [1,2,3,4,5,6].map(i => <Skeleton key={i} className="min-w-[280px] h-[380px] rounded-3xl" />) :
+                getSectionProducts(category).map(product => (
+                  <div key={product.id} className="min-w-[280px] snap-start">
+                    <ProductCard product={product} />
+                  </div>
+                ))
+              }
+            </div>
+          </section>
+        ))}
+
+        {/* Main Grid for Filtered View (if user wanted a new page, we can show this when a category is selected) */}
+        {activeCategory !== "All" && (
+          <section className="mt-12 pt-12 border-t border-border/50">
+             <div className="flex items-center justify-between mb-8">
+               <h2 className="text-3xl font-bold text-foreground">{activeCategory} Selection</h2>
+               <Button onClick={() => setActiveCategory("All")} variant="outline">Back to Home</Button>
+             </div>
+             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+               {filteredProducts.map(product => <ProductCard key={product.id} product={product} />)}
+             </div>
+          </section>
         )}
       </main>
 
