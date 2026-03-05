@@ -4,81 +4,69 @@ import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useCart } from "@/context/CartContext";
 import type { Product } from "@shared/schema";
+import fishImg from "@assets/Gemini_Generated_Image_w6wqkkw6wqkkw6wq_(1)_1772713077919.png";
 
 export function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useCart();
   const isUnavailable = product.status === "unavailable";
 
   return (
-    <div className="group relative bg-card rounded-3xl p-4 sm:p-5 shadow-sm hover:shadow-xl transition-all duration-300 border border-border/60 flex flex-col h-full hover:-translate-y-1">
-      <div className="relative aspect-square w-full rounded-2xl bg-muted/30 overflow-hidden mb-4 border border-border/40">
-        {product.imageUrl ? (
-          <img
-            src={product.imageUrl}
-            alt={product.name}
-            className={`w-full h-full object-cover transition-transform duration-700 ${
-              isUnavailable ? "grayscale opacity-60" : "group-hover:scale-110"
-            }`}
-          />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-            <span className="text-6xl opacity-20 filter drop-shadow-sm">🐟</span>
-          </div>
-        )}
+    <div className="group relative bg-card flex flex-col h-full transition-all duration-300">
+      <div className="relative aspect-square w-full bg-muted/30 overflow-hidden mb-3 border border-border/20 rounded-xl">
+        <img
+          src={product.imageUrl || fishImg}
+          alt={product.name}
+          className={`w-full h-full object-cover transition-transform duration-700 ${
+            isUnavailable ? "grayscale opacity-60" : "group-hover:scale-110"
+          }`}
+        />
         
-        <div className="absolute top-3 left-3 flex flex-col gap-1">
+        <div className="absolute top-2 left-2 flex flex-col gap-1">
           {product.status === "available" && (
-            <Badge variant="outline" className="bg-emerald-50/90 backdrop-blur text-emerald-700 border-emerald-200 shadow-sm py-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse mr-2"></span>
+            <Badge variant="outline" className="bg-emerald-500/90 backdrop-blur text-white border-none shadow-sm py-0.5 text-[10px] h-5">
               Available
             </Badge>
           )}
           {product.status === "limited" && (
-            <Badge variant="outline" className="bg-amber-50/90 backdrop-blur text-amber-700 border-amber-200 shadow-sm py-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse mr-2"></span>
-              Limited Stock
+            <Badge variant="outline" className="bg-amber-500/90 backdrop-blur text-white border-none shadow-sm py-0.5 text-[10px] h-5">
+              Limited
             </Badge>
           )}
           {product.status === "unavailable" && (
-            <Badge variant="outline" className="bg-red-50/90 backdrop-blur text-red-700 border-red-200 shadow-sm py-1 opacity-90">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 mr-2"></span>
+            <Badge variant="outline" className="bg-red-500/90 backdrop-blur text-white border-none shadow-sm py-0.5 text-[10px] h-5">
               Sold Out
             </Badge>
           )}
         </div>
 
         {product.status === "limited" && product.limitedStockNote && (
-          <div className="absolute bottom-3 left-3 right-3">
-             <div className="bg-background/95 backdrop-blur rounded-lg px-3 py-1.5 text-xs font-medium text-amber-600 shadow-sm flex items-center gap-1.5">
-                <Info className="w-3.5 h-3.5 flex-shrink-0" />
+          <div className="absolute bottom-2 left-2 right-2">
+             <div className="bg-black/60 backdrop-blur rounded px-2 py-1 text-[10px] font-medium text-white shadow-sm flex items-center gap-1">
+                <Info className="w-3 h-3 flex-shrink-0" />
                 <span className="truncate">{product.limitedStockNote}</span>
              </div>
           </div>
         )}
       </div>
 
-      <div className="flex-1 flex flex-col">
-        <div className="text-sm font-medium text-primary mb-1 uppercase tracking-wider">{product.category}</div>
-        <h3 className="font-display font-semibold text-lg text-foreground leading-tight mb-2">
+      <div className="flex-1 flex flex-col px-1">
+        <div className="text-[10px] font-bold text-primary/80 mb-0.5 uppercase tracking-wider">{product.category}</div>
+        <h3 className="font-sans font-bold text-sm text-foreground leading-tight mb-1 line-clamp-2">
           {product.name}
         </h3>
         
-        <div className="flex items-end justify-between mt-auto pt-4 border-t border-border/50">
-          <div>
-            <span className="text-2xl font-bold text-foreground">₹{product.price}</span>
-            <span className="text-sm font-medium text-muted-foreground ml-1">/ {product.unit || "item"}</span>
+        <div className="flex items-center justify-between mt-auto pt-2">
+          <div className="flex flex-col">
+            <span className="text-base font-black text-foreground">₹{product.price}</span>
+            <span className="text-[10px] font-medium text-muted-foreground -mt-1">{product.unit || "item"}</span>
           </div>
           <Button
             onClick={() => addToCart(product)}
             disabled={isUnavailable}
-            className={`rounded-full shadow-lg ${
-              isUnavailable 
-                ? "" 
-                : "bg-primary hover:bg-primary/90 shadow-primary/20 hover:shadow-primary/30"
-            }`}
-            size="sm"
+            className="rounded-full w-8 h-8 p-0 bg-primary hover:bg-primary/90 text-white shadow-md flex items-center justify-center"
+            size="icon"
           >
-            {isUnavailable ? "Out" : <><Plus className="w-4 h-4 mr-1" /> Add</>}
+            {isUnavailable ? <span className="text-[10px]">Out</span> : <Plus className="w-5 h-5 text-white" />}
           </Button>
         </div>
       </div>
