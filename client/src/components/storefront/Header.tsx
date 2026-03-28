@@ -41,7 +41,7 @@ export function Header({ onSearch }: { onSearch?: (query: string) => void }) {
         )}
 
         <div className="flex items-center gap-1 sm:gap-4 shrink-0">
-          <Link href="/admin">
+          <Link href="/profile">
             <Button variant="ghost" size="icon" className="text-foreground hover:bg-accent/10 rounded-full">
               <img src={userImg} alt="Profile" className="w-5 h-5 sm:w-6 sm:h-6 object-contain" />
             </Button>
