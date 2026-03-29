@@ -3,7 +3,7 @@ import { useCart } from "@/context/CartContext";
 import { Header } from "@/components/storefront/Header";
 import { CartDrawer } from "@/components/storefront/CartDrawer";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Tag, ShoppingBag, Check, Flame, Utensils } from "lucide-react";
+import { ChevronLeft, Tag, ShoppingBag, Check, Utensils } from "lucide-react";
 import { useState } from "react";
 import fishImg from "@assets/Gemini_Generated_Image_w6wqkkw6wqkkw6wq_(1)_1772713077919.png";
 import prawnsImg from "@assets/Gemini_Generated_Image_5xy0sd5xy0sd5xy0_1772713090650.png";
@@ -277,26 +277,6 @@ export default function ComboDetail() {
           </div>
         </div>
 
-        {/* Nutritional Information */}
-        <section className="mb-14">
-          <div className="flex items-center gap-2 mb-5">
-            <Flame className="w-5 h-5 text-accent" />
-            <h2 className="text-xl font-bold text-foreground">Nutritional Information</h2>
-            <span className="text-xs text-muted-foreground ml-1">(per 100 g)</span>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {combo.nutrition.map(({ label, value, icon }) => (
-              <div
-                key={label}
-                className="bg-card border border-border/30 rounded-2xl p-4 flex flex-col items-center gap-2 text-center hover:shadow-sm transition-shadow"
-              >
-                <span className="text-3xl">{icon}</span>
-                <span className="text-xs text-muted-foreground">{label}</span>
-                <span className="text-sm font-bold text-foreground">{value}</span>
-              </div>
-            ))}
-          </div>
-        </section>
       </div>
 
       <CartDrawer />

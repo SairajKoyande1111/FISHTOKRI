@@ -9,15 +9,15 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getDummyDetail, getStrikePrice } from "@/lib/productDummyData";
 import {
-  ChevronLeft, Plus, Minus, Copy, Check, Tag, Utensils, ChefHat, Flame,
+  ChevronLeft, Plus, Minus, Copy, Check, Tag, Utensils, ChefHat,
 } from "lucide-react";
 import { useState, useRef } from "react";
 import { SwipeHint } from "@/components/storefront/SwipeHint";
 import type { Product } from "@shared/schema";
 
-import weighScaleIcon from "@assets/weigh-scale_1774800434068.png";
-import piecesIcon from "@assets/line_1774800556732.png";
-import servesIcon from "@assets/serving-dish_1774800634271.png";
+import weighScaleIcon from "@assets/weight-scale_1774801344716.png";
+import piecesIcon from "@assets/cutlery_1774801395283.png";
+import servesIcon from "@assets/hot-food_1774801420499.png";
 
 import fishImg from "@assets/Gemini_Generated_Image_w6wqkkw6wqkkw6wq_(1)_1772713077919.png";
 import prawnsImg from "@assets/Gemini_Generated_Image_5xy0sd5xy0sd5xy0_1772713090650.png";
@@ -257,27 +257,6 @@ export default function ProductDetail() {
             </div>
           </div>
         </div>
-
-        {/* ── Nutritional Information ── */}
-        <section className="mb-14">
-          <div className="flex items-center gap-2 mb-5">
-            <Flame className="w-5 h-5 text-accent" />
-            <h2 className="text-xl font-bold text-foreground">Nutritional Information</h2>
-            <span className="text-xs text-muted-foreground ml-1">(per 100 g)</span>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {dummy.nutrition.map(({ label, value, icon }) => (
-              <div
-                key={label}
-                className="bg-card border border-border/30 rounded-2xl p-4 flex flex-col items-center gap-2 text-center hover:shadow-sm transition-shadow"
-              >
-                <span className="text-3xl">{icon}</span>
-                <span className="text-xs text-muted-foreground">{label}</span>
-                <span className="text-sm font-bold text-foreground">{value}</span>
-              </div>
-            ))}
-          </div>
-        </section>
 
         {/* ── Explore New Recipes ── */}
         <section className="mb-14">
