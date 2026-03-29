@@ -58,6 +58,83 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.
   cancelled:        { label: "Cancelled",          color: "bg-red-100 text-red-700 border-red-200",           icon: <AlertCircle className="w-3.5 h-3.5" /> },
 };
 
+const DEMO_ORDERS = [
+  {
+    id: 1001,
+    customerName: "Rahul Sharma",
+    phone: "9876543210",
+    deliveryArea: "Thane West",
+    address: "Wing B, Flat 402, Shree Nagar CHS, Gokhale Road",
+    items: [
+      { productId: 1, quantity: 1, name: "Silver Pomfret", price: 1200 },
+      { productId: 2, quantity: 1, name: "White Prawn 500g", price: 700 },
+    ],
+    status: "out_for_delivery",
+    notes: "Please clean and cut the fish",
+    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+  },
+  {
+    id: 1002,
+    customerName: "Rahul Sharma",
+    phone: "9876543210",
+    deliveryArea: "Thane West",
+    address: "Wing B, Flat 402, Shree Nagar CHS, Gokhale Road",
+    items: [
+      { productId: 3, quantity: 1, name: "Chicken Curry Cut", price: 250 },
+      { productId: 4, quantity: 1, name: "Goat Curry Cut", price: 850 },
+      { productId: 5, quantity: 2, name: "Fish Curry Masala", price: 50 },
+    ],
+    status: "confirmed",
+    notes: null,
+    createdAt: new Date(Date.now() - 30 * 60 * 1000),
+  },
+  {
+    id: 1003,
+    customerName: "Rahul Sharma",
+    phone: "9876543210",
+    deliveryArea: "Thane West",
+    address: "Wing B, Flat 402, Shree Nagar CHS, Gokhale Road",
+    items: [
+      { productId: 6, quantity: 1, name: "Surmai (King Fish)", price: 900 },
+      { productId: 7, quantity: 1, name: "Tiger Prawn", price: 1200 },
+      { productId: 8, quantity: 1, name: "Goat Biryani Cut", price: 850 },
+    ],
+    status: "delivered",
+    notes: null,
+    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+  },
+  {
+    id: 1004,
+    customerName: "Rahul Sharma",
+    phone: "9876543210",
+    deliveryArea: "Thane West",
+    address: "Wing B, Flat 402, Shree Nagar CHS, Gokhale Road",
+    items: [
+      { productId: 9, quantity: 2, name: "Rawas (Indian Salmon)", price: 950 },
+      { productId: 10, quantity: 1, name: "Lobsters", price: 2500 },
+    ],
+    status: "delivered",
+    notes: "Deliver before 10am please",
+    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+  },
+  {
+    id: 1005,
+    customerName: "Rahul Sharma",
+    phone: "9876543210",
+    deliveryArea: "Thane West",
+    address: "Wing B, Flat 402, Shree Nagar CHS, Gokhale Road",
+    items: [
+      { productId: 11, quantity: 1, name: "Black Pomfret", price: 1100 },
+      { productId: 12, quantity: 1, name: "Chicken Boneless Cubes", price: 400 },
+      { productId: 13, quantity: 3, name: "Fish Fry Masala", price: 50 },
+      { productId: 14, quantity: 1, name: "Goat Kheema", price: 950 },
+    ],
+    status: "delivered",
+    notes: null,
+    createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
+  },
+];
+
 const TABS = ["Profile", "Addresses", "My Orders"] as const;
 type Tab = typeof TABS[number];
 
@@ -246,8 +323,9 @@ export default function Profile() {
     enabled: !!profile.phone && activeTab === "My Orders",
   });
 
-  const currentOrders = orders?.filter(o => ["pending", "confirmed", "out_for_delivery"].includes(o.status)) || [];
-  const previousOrders = orders?.filter(o => ["delivered", "cancelled"].includes(o.status)) || [];
+  const allOrders = [...(orders || []), ...(DEMO_ORDERS as any[])];
+  const currentOrders = allOrders.filter(o => ["pending", "confirmed", "out_for_delivery"].includes(o.status));
+  const previousOrders = allOrders.filter(o => ["delivered", "cancelled"].includes(o.status));
 
   const saveProfile = () => {
     setProfile(draftProfile);
@@ -319,7 +397,7 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
       <Header />
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-6">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
         {/* Back + Title */}
         <div className="flex items-center gap-3 mb-6">
           <Button variant="ghost" size="icon" onClick={() => navigate("/")} className="rounded-full border border-border/50 bg-white">
@@ -546,14 +624,7 @@ export default function Profile() {
         {/* ── My Orders Tab ── */}
         {activeTab === "My Orders" && (
           <div className="space-y-5">
-            {!profile.phone ? (
-              <div className="bg-white rounded-2xl border border-border/50 shadow-sm p-8 text-center">
-                <Phone className="w-10 h-10 mx-auto mb-3 text-muted-foreground opacity-30" />
-                <p className="text-sm font-semibold text-foreground mb-1">Phone number required</p>
-                <p className="text-xs text-muted-foreground mb-4">Add your phone number in Profile to see your orders</p>
-                <Button size="sm" onClick={() => setActiveTab("Profile")} className="rounded-full bg-primary text-white px-5">Go to Profile</Button>
-              </div>
-            ) : ordersLoading ? (
+            {ordersLoading ? (
               <div className="space-y-4">
                 {[1, 2].map(i => <Skeleton key={i} className="h-40 rounded-2xl" />)}
               </div>
