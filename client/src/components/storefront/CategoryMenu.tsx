@@ -134,28 +134,33 @@ export function CategoryMenuDropdown({ open, onClose }: Props) {
   return (
     <div
       ref={ref}
-      className="absolute top-full left-0 right-0 z-[100] shadow-2xl border-t border-border/20"
-      style={{ maxHeight: "80vh" }}
+      className="absolute top-full z-[100]
+        left-0 right-0 border-t border-border/20 shadow-xl
+        sm:left-auto sm:right-6 sm:w-[660px] sm:border sm:border-slate-200 sm:border-t sm:rounded-2xl sm:shadow-2xl"
+      style={{ maxHeight: "75vh" }}
     >
-      <div className="max-w-7xl mx-auto bg-white flex overflow-hidden rounded-b-2xl shadow-xl">
-        {/* Left panel — main categories */}
-        <div className="w-56 sm:w-64 flex-shrink-0 bg-slate-50 border-r border-slate-100 overflow-y-auto" style={{ maxHeight: "70vh" }}>
+      <div className="bg-white flex overflow-hidden h-full sm:rounded-2xl" style={{ maxHeight: "75vh" }}>
+        {/* Left panel — categories */}
+        <div
+          className="w-44 sm:w-56 flex-shrink-0 bg-slate-50 border-r border-slate-100 overflow-y-auto"
+          style={{ maxHeight: "75vh" }}
+        >
           {MENU_DATA.map(cat => (
             <button
               key={cat.name}
               onClick={() => handleCategoryClick(cat.name)}
               onMouseEnter={() => setActiveCategory(cat.name)}
-              className={`w-full flex items-center gap-3 px-4 py-3.5 text-left transition-colors border-b border-slate-100/60 ${
+              className={`w-full flex items-center gap-2.5 sm:gap-3 px-3 sm:px-4 py-3 sm:py-3.5 text-left transition-colors border-b border-slate-100/60 ${
                 activeCategory === cat.name
-                  ? "bg-white border-l-2 border-l-accent"
-                  : "hover:bg-white border-l-2 border-l-transparent"
+                  ? "bg-white border-l-[3px] border-l-accent"
+                  : "hover:bg-white border-l-[3px] border-l-transparent"
               }`}
               data-testid={`menu-category-${cat.name.toLowerCase().replace(/\s+/g, "-")}`}
             >
-              <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 bg-white border border-slate-100 shadow-sm">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden flex-shrink-0 bg-white border border-slate-100 shadow-sm">
                 <img src={cat.image} alt={cat.name} className="w-full h-full object-cover" />
               </div>
-              <span className={`text-sm font-medium ${activeCategory === cat.name ? "text-foreground font-semibold" : "text-slate-600"}`}>
+              <span className={`text-xs sm:text-sm font-medium ${activeCategory === cat.name ? "text-foreground font-semibold" : "text-slate-600"}`}>
                 {cat.name}
               </span>
             </button>
@@ -163,13 +168,16 @@ export function CategoryMenuDropdown({ open, onClose }: Props) {
         </div>
 
         {/* Right panel — subcategories */}
-        <div className="flex-1 bg-white p-6 overflow-y-auto" style={{ maxHeight: "70vh" }}>
+        <div
+          className="flex-1 bg-white sm:bg-slate-50/50 p-4 sm:px-6 sm:py-4 overflow-y-auto"
+          style={{ maxHeight: "75vh" }}
+        >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-0">
             {active.subcategories.map((sub) => (
               <button
                 key={sub}
                 onClick={() => handleSubcategoryClick(sub)}
-                className="text-left text-sm text-slate-600 hover:text-accent font-medium py-3 px-2 border-b border-slate-100 hover:bg-accent/5 rounded transition-colors"
+                className="text-left text-sm text-slate-600 hover:text-accent font-medium py-3 px-2 border-b border-slate-100 hover:bg-accent/5 sm:hover:bg-white rounded transition-colors"
                 data-testid={`menu-subcategory-${sub.toLowerCase().replace(/\s+/g, "-")}`}
               >
                 {sub}
