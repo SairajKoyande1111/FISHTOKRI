@@ -15,6 +15,10 @@ import { useState, useRef } from "react";
 import { SwipeHint } from "@/components/storefront/SwipeHint";
 import type { Product } from "@shared/schema";
 
+import weighScaleIcon from "@assets/weigh-scale_1774800434068.png";
+import piecesIcon from "@assets/line_1774800556732.png";
+import servesIcon from "@assets/serving-dish_1774800634271.png";
+
 import fishImg from "@assets/Gemini_Generated_Image_w6wqkkw6wqkkw6wq_(1)_1772713077919.png";
 import prawnsImg from "@assets/Gemini_Generated_Image_5xy0sd5xy0sd5xy0_1772713090650.png";
 import chickenImg from "@assets/Gemini_Generated_Image_g0ecb4g0ecb4g0ec_1772713219972.png";
@@ -31,7 +35,7 @@ function getFallbackImage(category: string) {
   }
 }
 
-function CouponCard({ code, desc, color }: { code: string; desc: string; color: string }) {
+function CouponCard({ code, desc }: { code: string; desc: string; color: string }) {
   const [copied, setCopied] = useState(false);
   const copy = () => {
     navigator.clipboard.writeText(code);
@@ -39,17 +43,22 @@ function CouponCard({ code, desc, color }: { code: string; desc: string; color: 
     setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <div className={`flex items-center justify-between border rounded-xl px-4 py-3 ${color}`}>
-      <div className="flex items-center gap-3">
-        <Tag className="w-4 h-4 shrink-0" />
-        <div>
-          <p className="font-bold text-sm tracking-wider">{code}</p>
-          <p className="text-xs opacity-80">{desc}</p>
+    <div className="flex items-center justify-between px-4 py-3 bg-background hover:bg-muted/20 transition-colors">
+      <div className="flex items-center gap-2.5 min-w-0">
+        <div className="w-7 h-7 rounded-md bg-muted flex items-center justify-center shrink-0">
+          <Tag className="w-3.5 h-3.5 text-muted-foreground" />
+        </div>
+        <div className="min-w-0">
+          <span className="font-mono font-bold text-sm text-foreground tracking-widest border border-dashed border-border/60 rounded px-1.5 py-0.5 bg-muted/40">{code}</span>
+          <p className="text-xs text-muted-foreground mt-0.5 truncate">{desc}</p>
         </div>
       </div>
-      <button onClick={copy} className="flex items-center gap-1 text-xs font-semibold underline underline-offset-2 ml-4 shrink-0">
+      <button
+        onClick={copy}
+        className="flex items-center gap-1 text-xs font-semibold text-primary hover:text-primary/80 ml-3 shrink-0 transition-colors"
+      >
         {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-        {copied ? "Copied!" : "Copy"}
+        {copied ? "Copied" : "Copy"}
       </button>
     </div>
   );
@@ -173,42 +182,29 @@ export default function ProductDetail() {
           {/* RIGHT – Details */}
           <div className="flex flex-col gap-5">
 
-            {/* Category badge + Name */}
+            {/* Name only — no category label */}
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-primary/70 mb-1 block">
-                {product.category}
-              </span>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight">{product.name}</h1>
             </div>
 
             {/* Description */}
             <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">{dummy.description}</p>
 
-            {/* Weight / Pieces / Serves */}
-            <div className="flex items-center gap-0 divide-x divide-border border border-border/40 rounded-2xl overflow-hidden bg-muted/20">
+            {/* Weight / Pieces / Serves — custom icons */}
+            <div className="flex items-stretch gap-0 divide-x divide-border border border-border/40 rounded-2xl overflow-hidden bg-muted/20">
               {[
-                { label: "Weight", value: dummy.weight, icon: "⚖️" },
-                { label: "Pieces", value: dummy.pieces, icon: "🔢" },
-                { label: "Serves", value: dummy.serves, icon: "🍽️" },
+                { label: "Weight", value: dummy.weight, icon: weighScaleIcon },
+                { label: "Pieces", value: dummy.pieces, icon: piecesIcon },
+                { label: "Serves", value: dummy.serves, icon: servesIcon },
               ].map(({ label, value, icon }) => (
-                <div key={label} className="flex-1 flex flex-col items-center py-4 px-2">
-                  <span className="text-xl mb-1">{icon}</span>
-                  <span className="text-xs text-muted-foreground">{label}</span>
-                  <span className="text-sm font-semibold text-foreground mt-0.5">{value}</span>
+                <div key={label} className="flex-1 flex items-center gap-3 py-4 px-4">
+                  <div className="flex flex-col items-center shrink-0">
+                    <img src={icon} alt={label} className="w-7 h-7 object-contain opacity-70 dark:invert" />
+                    <span className="text-[10px] text-muted-foreground mt-1 font-medium">{label}</span>
+                  </div>
+                  <span className="text-sm font-bold text-foreground leading-tight">{value}</span>
                 </div>
               ))}
-            </div>
-
-            {/* Coupon Codes */}
-            <div>
-              <h3 className="text-sm font-bold text-foreground mb-2 flex items-center gap-2">
-                <Tag className="w-4 h-4 text-accent" /> Available Offers
-              </h3>
-              <div className="flex flex-col gap-2">
-                {dummy.coupons.map((c) => (
-                  <CouponCard key={c.code} {...c} />
-                ))}
-              </div>
             </div>
 
             {/* Price */}
@@ -245,6 +241,19 @@ export default function ProductDetail() {
               >
                 {isUnavailable ? "Out of Stock" : `Add ${qty} to Cart — ₹${(product.price ?? 0) * qty}`}
               </Button>
+            </div>
+
+            {/* Available Offers — moved below Add to Cart, compact & professional */}
+            <div className="border border-border/40 rounded-2xl overflow-hidden">
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-border/30 bg-muted/20">
+                <Tag className="w-3.5 h-3.5 text-muted-foreground" />
+                <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Available Offers</h3>
+              </div>
+              <div className="flex flex-col divide-y divide-border/30">
+                {dummy.coupons.map((c) => (
+                  <CouponCard key={c.code} {...c} />
+                ))}
+              </div>
             </div>
           </div>
         </div>
