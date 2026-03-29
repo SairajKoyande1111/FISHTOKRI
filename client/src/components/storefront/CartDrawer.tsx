@@ -24,13 +24,11 @@ export interface SavedAddress {
   id: string;
   name: string;
   phone: string;
+  building: string;
+  street: string;
+  area: string;
   pincode: string;
-  state: string;
-  address: string;
-  locality: string;
-  city: string;
-  landmark: string;
-  type: "home" | "office" | "other";
+  type: "house" | "office" | "other";
   label: string;
   instructions: string;
 }
@@ -40,13 +38,11 @@ const DUMMY_ADDRESSES: SavedAddress[] = [
     id: "dummy-1",
     name: "Rahul Sharma",
     phone: "9876543210",
+    building: "Seaview Apartments, Wing B, Flat 402",
+    street: "Lokhandwala Complex",
+    area: "Andheri West",
     pincode: "400053",
-    state: "Maharashtra",
-    address: "Seaview Apartments, Wing B, Flat 402",
-    locality: "Lokhandwala Complex",
-    city: "Mumbai",
-    landmark: "Near D-Mart",
-    type: "home",
+    type: "house",
     label: "Home",
     instructions: "Call before delivery",
   },
@@ -54,12 +50,10 @@ const DUMMY_ADDRESSES: SavedAddress[] = [
     id: "dummy-2",
     name: "Rahul Sharma",
     phone: "9876543210",
+    building: "Tech Park, Tower 3, Floor 5",
+    street: "Marve Road",
+    area: "Malad West",
     pincode: "400064",
-    state: "Maharashtra",
-    address: "Tech Park, Tower 3, Floor 5",
-    locality: "Marve Road",
-    city: "Mumbai",
-    landmark: "Opposite Metro Station",
     type: "office",
     label: "Office",
     instructions: "Leave at reception",
@@ -67,7 +61,7 @@ const DUMMY_ADDRESSES: SavedAddress[] = [
 ];
 
 const addressTypeColors: Record<string, string> = {
-  home: "bg-blue-100 text-blue-700",
+  house: "bg-blue-100 text-blue-700",
   office: "bg-purple-100 text-purple-700",
   other: "bg-amber-100 text-amber-700",
 };
@@ -111,10 +105,10 @@ export function CartDrawer() {
   const placeOrder = () => {
     const selected = savedAddresses.find(a => a.id === selectedAddressId);
     if (!selected) return;
-    const fullAddress = [selected.address, selected.locality, selected.city, selected.state, selected.pincode].filter(Boolean).join(", ");
+    const fullAddress = [selected.building, selected.street, selected.area, selected.pincode].filter(Boolean).join(", ");
     const orderItems = items.map(i => ({ productId: i.id, quantity: i.quantity, name: i.name, price: i.price }));
     createOrder(
-      { customerName: selected.name, phone: selected.phone, deliveryArea: selected.city, address: fullAddress, notes: selected.instructions, items: orderItems },
+      { customerName: selected.name, phone: selected.phone, deliveryArea: selected.area, address: fullAddress, notes: selected.instructions, items: orderItems },
       { onSuccess: () => { setIsSuccess(true); clearCart(); } }
     );
   };
@@ -296,7 +290,7 @@ export function CartDrawer() {
                                 </div>
                                 <p className="text-xs text-muted-foreground">{addr.phone}</p>
                                 <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                                  {[addr.address, addr.locality, addr.city, addr.state, addr.pincode].filter(Boolean).join(", ")}
+                                  {[addr.building, addr.street, addr.area, addr.pincode].filter(Boolean).join(", ")}
                                 </p>
                               </div>
                             </div>
