@@ -11,7 +11,7 @@ import {
   type OrderRequest,
   type InsertOrderRequest,
 } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -25,6 +25,7 @@ export interface IStorage {
   deleteProduct(id: number): Promise<void>;
 
   getOrderRequests(): Promise<OrderRequest[]>;
+  getOrdersByPhone(phone: string): Promise<OrderRequest[]>;
   getOrderRequest(id: number): Promise<OrderRequest | undefined>;
   createOrderRequest(order: InsertOrderRequest): Promise<OrderRequest>;
   updateOrderRequestStatus(id: number, status: string): Promise<OrderRequest | undefined>;
@@ -77,7 +78,13 @@ export class DatabaseStorage implements IStorage {
 
   // Orders
   async getOrderRequests(): Promise<OrderRequest[]> {
-    return await db.select().from(orderRequests).orderBy(orderRequests.createdAt);
+    return await db.select().from(orderRequests).orderBy(desc(orderRequests.createdAt));
+  }
+
+  async getOrdersByPhone(phone: string): Promise<OrderRequest[]> {
+    return await db.select().from(orderRequests)
+      .where(eq(orderRequests.phone, phone))
+      .orderBy(desc(orderRequests.createdAt));
   }
 
   async getOrderRequest(id: number): Promise<OrderRequest | undefined> {

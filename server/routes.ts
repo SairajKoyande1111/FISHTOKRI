@@ -121,6 +121,13 @@ export async function registerRoutes(
     res.json(orders);
   });
 
+  app.get("/api/orders/by-phone/:phone", async (req, res) => {
+    const { phone } = req.params;
+    if (!phone) return res.status(400).json({ message: "Phone required" });
+    const orders = await storage.getOrdersByPhone(phone);
+    res.json(orders);
+  });
+
   app.patch(api.orders.updateStatus.path, requireAuth, async (req, res) => {
     try {
       const input = api.orders.updateStatus.input.parse(req.body);
